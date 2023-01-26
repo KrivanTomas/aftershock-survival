@@ -6,11 +6,11 @@ A survival fps game where the player has to manage recources, fix and upgrade th
 - Blender 3.3.3
 - VS Code
 
-## Amber.dev
+## ZlMeKrFi
 - [Tomáš Zlatuška](https://github.com/Tomaseqq) - Leader, play-tester, quality check, designer, website developer
-- [Vojtěch Menšík]() - Programmer
+- [Vojtěch Menšík](https://github.com/VojtechMensik) - Programmer
 - [Tomáš Křivan](https://github.com/KrivanTomas) - Co-leader, lead programmer, asset modeler
-- [Alexandr Filipi]() - Programmer
+- [Alexandr Filipi](https://github.com/alex157635482) - Programmer
   
 ## Links
 - No links yet
