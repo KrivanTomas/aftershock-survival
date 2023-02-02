@@ -152,7 +152,7 @@ RectTransform:
   m_GameObject: {fileID: 592755514}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.8625, y: 0.7467188, z: 1}
+  m_LocalScale: {x: 0.81, y: 0.7467188, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 863656956}
@@ -211,7 +211,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 0
+    m_Left: 10
     m_Right: 0
     m_Top: 200
     m_Bottom: 0
@@ -236,8 +236,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inventory: {fileID: 592755514}
   itemSlot: {fileID: 5655751414604238844, guid: 39758f1ae6bea264fb09329be2fce770, type: 3}
-  otestuj: 0
-  PocetSlotySirka: 1
+  otestuj: 1
+  PocetSlotySirka: 10
   PocetSlotyVyska: 3
 --- !u!1 &863656952
 GameObject:
