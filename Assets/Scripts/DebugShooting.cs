@@ -28,7 +28,7 @@ public class DebugShooting : MonoBehaviour
     void Start()
     {
         gunshotsClips = gunshots.Length - 1;
-        DOTween.Init(null, false, LogBehaviour.Verbose);
+        DOTween.Init(null, false, LogBehaviour.ErrorsOnly);
     }
 
     // Update is called once per frame
