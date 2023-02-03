@@ -10,8 +10,9 @@ public class AdvMovement : MonoBehaviour
 
     // todo:
 
-    // keep movement velocity
-    // fix strayfing
+    // air movement?
+    // fix strayfing speed advantage
+    // tweening?
 
 
     [Header("References")]
@@ -71,16 +72,17 @@ public class AdvMovement : MonoBehaviour
 
         if(isGrounded && velocity.y < 0){
             velocity.y = -0.02f;
-        }
-
-        if (isGrounded) {
             movement = inputMovement;
         }
-        else {
-            // movement += inputMovement * airMovement;
-            // movement.x = Mathf.Clamp(movement.x, inputMovement.x * airMovement,inputMovement.x * airMovement);
-            // movement.z = Mathf.Clamp(movement.z, inputMovement.z * airMovement,inputMovement.z * airMovement);
-        }
+
+        // if (isGrounded) {
+            
+        // }
+        // else {
+        //     movement += inputMovement * airMovement;
+        //     movement.x = Mathf.Clamp(movement.x, inputMovement.x * airMovement,inputMovement.x * airMovement);
+        //     movement.z = Mathf.Clamp(movement.z, inputMovement.z * airMovement,inputMovement.z * airMovement);
+        // }
 
         if (isGrounded && velocity.y < 0 && Input.GetButtonDown("Jump")) {
             velocity.y = Mathf.Sqrt(jumpHeight * -3f * gravity);
