@@ -22,11 +22,17 @@ public class AdvMovement : MonoBehaviour
     [SerializeField] private Transform view;
 
     [Header("Settings")]
-    [SerializeField] private float baseSpeed = 10f;
+    [SerializeField] private float baseHeight = 1.75f;
+    [SerializeField] private float baseSpeed = 5f;
+    [SerializeField] private float crouchHeight = .8f;
+    [SerializeField] private float crouchSpeed = 2f;
+    [SerializeField] private float sprintSpeed = 10f;
     [SerializeField] private float gravity = -9.8f;
+    [SerializeField] private float staticGravity = -0.2f;
     [SerializeField] private float jumpHeight = 0.5f;
-    [SerializeField] [Range(0f,1f)] private float airMovement = 0f;
+    //[SerializeField] [Range(0f,1f)] private float airMovement = 0f;
     [SerializeField] private float groundDistanse = 0.1f;
+    [SerializeField] private float groundOffset = 0.1f;
     [SerializeField] private LayerMask groundMask;
 
 
@@ -34,9 +40,10 @@ public class AdvMovement : MonoBehaviour
     
 
     // Helper variables
-    [SerializeField] private Vector3 velocity;
+    private Vector3 velocity;
     private Vector3 movement;
     private float verticalRotation = 0f;
+    private float speedMod;
     private bool isGrounded = false;
     
     private void Temp() {
@@ -67,22 +74,30 @@ public class AdvMovement : MonoBehaviour
     private void MovePlayer() {
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistanse, groundMask);
 
-        Vector3 inputMovement = Input.GetAxis("Vertical") * transform.forward + Input.GetAxis("Horizontal") * transform.right;
-        inputMovement *= baseSpeed * Time.deltaTime;
 
+
+
+        if (velocity.y < 0 && Input.GetKey(KeyCode.LeftControl)) {
+            SetHeight(crouchHeight);
+            speedMod = crouchSpeed;
+        }
+        else{
+            SetHeight(baseHeight);
+            speedMod = baseSpeed;
+
+            if (isGrounded && velocity.y < 0 && Input.GetKey(KeyCode.LeftShift)) {
+                speedMod = sprintSpeed;
+            }
+        }
+        
+
+        Vector3 inputMovement = Input.GetAxis("Vertical") * transform.forward + Input.GetAxis("Horizontal") * transform.right;
+        inputMovement *= speedMod * Time.deltaTime;
+        
         if(isGrounded && velocity.y < 0){
-            velocity.y = -0.02f;
+            velocity.y = staticGravity;
             movement = inputMovement;
         }
-
-        // if (isGrounded) {
-            
-        // }
-        // else {
-        //     movement += inputMovement * airMovement;
-        //     movement.x = Mathf.Clamp(movement.x, inputMovement.x * airMovement,inputMovement.x * airMovement);
-        //     movement.z = Mathf.Clamp(movement.z, inputMovement.z * airMovement,inputMovement.z * airMovement);
-        // }
 
         if (isGrounded && velocity.y < 0 && Input.GetButtonDown("Jump")) {
             velocity.y = Mathf.Sqrt(jumpHeight * -3f * gravity);
@@ -90,5 +105,11 @@ public class AdvMovement : MonoBehaviour
 
         velocity.y += gravity * Time.deltaTime;
         characterController.Move(velocity * Time.deltaTime + movement);
+    }
+
+    private void SetHeight(float height){
+        characterController.height = height;
+        characterController.center = Vector3.up * (.5f * (Mathf.Max((height - 1f),0f) + groundOffset));
+        view.transform.localPosition = Vector3.up * (Mathf.Max(height - 1f, 0f)  + .5f);
     }
 }
