@@ -22,6 +22,7 @@ public class AdvMovement : MonoBehaviour
     [SerializeField] private Transform view;
 
     [Header("Settings")]
+    [SerializeField] [Range(0f,1f)] private float cameraOffset = 0.3f;
     [SerializeField] private float baseHeight = 1.75f;
     [SerializeField] private float baseSpeed = 5f;
     [SerializeField] private float crouchHeight = .8f;
@@ -108,8 +109,9 @@ public class AdvMovement : MonoBehaviour
     }
 
     private void SetHeight(float height){
+        //float radius = characterController.radius;
         characterController.height = height;
         characterController.center = Vector3.up * (.5f * (Mathf.Max((height - 1f),0f) + groundOffset));
-        view.transform.localPosition = Vector3.up * (Mathf.Max(height - 1f, 0f)  + .5f);
+        view.transform.localPosition = Vector3.up * (Mathf.Max(height - 1f, 0f) + cameraOffset);
     }
 }
