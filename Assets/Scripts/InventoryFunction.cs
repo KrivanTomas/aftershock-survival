@@ -14,17 +14,19 @@ public class InventoryFunction : MonoBehaviour
     void Start()
     {
         button = gameObject.GetComponent<Button>();
-        btn.onClick.AddListener(DebugInv);
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        //Debug.Log("ss");
     }
 
-    void DebugInv()
+
+
+    public void DebugInv()
     {
-        Debug.DrawLine(gameObject.transform.position, Input.)
+        Debug.Log("click");
+        Debug.DrawLine(gameObject.transform.position, Input.mousePosition, Color.red);
     }
 }
