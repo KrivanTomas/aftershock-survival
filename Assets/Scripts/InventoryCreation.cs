@@ -5,33 +5,35 @@ using UnityEngine.UI;
 
 public class InventoryCreation : MonoBehaviour
 {
-    //představuje inventář jako celek - spravuje item sloty
-    [SerializeField] private GameObject inventory;
-    [SerializeField] private GameObject itemSlot;
-    private RectTransform invtrans;
-    private RectTransform itmtrans;
+    //hlavní objekt inventáře
+    [SerializeField] 
+    private RectTransform inventoryParent;
+    //skript vytváří tento objekt
+    [SerializeField] 
+    private GameObject itemSlotChild;
+    //kam skript vtváří item sloty
+    [SerializeField] 
+    private RectTransform itemSlotParent;
     private GridLayoutGroup gridLayout;
     public bool otestuj = false;
     public int PocetSlotySirka;
     public int PocetSlotyVyska;
     void Start()
     {
-        invtrans = inventory.GetComponent<RectTransform>();
-        itmtrans = itemSlot.GetComponent<RectTransform>();
-        gridLayout = inventory.GetComponent<GridLayoutGroup>();
+        gridLayout = itemSlotParent.GetComponent<GridLayoutGroup>();
     }
     private void Update() {
         if(otestuj)
         Inicializuj();
         otestuj = false;
-        //Debug.Log(invtrans.rect);
+
     }
     private void Inicializuj()
     {
         //vymazání
-        for(int i = 0;i<inventory.transform.childCount;i++)
+        for(int i = 0;i<itemSlotParent.childCount;i++)
         {
-            Destroy(inventory.transform.GetChild(i).gameObject);
+            Destroy(itemSlotParent.GetChild(i).gameObject);
         }
         //nastavení velikosti
         //[left;top] - počáteční bod okna (RectangleTransform)
@@ -43,7 +45,7 @@ public class InventoryCreation : MonoBehaviour
         int pocet = PocetSlotySirka*PocetSlotyVyska;
         for(int i = 0;i<pocet;i++)
         {
-            Instantiate(itemSlot,inventory.transform);            
+            Instantiate(itemSlotChild,itemSlotParent);            
            
         }
         
@@ -52,7 +54,9 @@ public class InventoryCreation : MonoBehaviour
         šířka = gridLayout.padding.horizontal + itmtrans.rect.width * PocetSlotySirka;
         výška = gridLayout.padding.vertical + itmtrans.rect.height * PocetSlotyVyska;
         */
-        invtrans.sizeDelta = new Vector2(gridLayout.padding.horizontal + itmtrans.rect.width * PocetSlotySirka,gridLayout.padding.vertical + itmtrans.rect.height * PocetSlotyVyska);
+        inventoryParent.sizeDelta = new Vector2(
+            gridLayout.padding.horizontal + (itemSlotChild.transform as RectTransform).rect.width * PocetSlotySirka,
+            gridLayout.padding.vertical + (itemSlotChild.transform as RectTransform).rect.height * PocetSlotyVyska);
         
     }
 }
