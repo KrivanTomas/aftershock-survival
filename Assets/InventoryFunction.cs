@@ -4,11 +4,12 @@ using UnityEngine;
 using UnityEngine.UI;
 public class InventoryFunction : MonoBehaviour
 {
-    // Start is called before the first frame update
+    //velikost (šířka a výška) item slotu 
     [SerializeField] private float itemSlotSize;
+    //padding okna s item sloty
     [SerializeField] private float padding;
     private Button button;
-
+    //obsah inventáře
     private GameObject[,] inventoryContent;
     void Start()
     {

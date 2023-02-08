@@ -11,7 +11,7 @@ public class InventoryCreation : MonoBehaviour
     //skript vytváří tento objekt
     [SerializeField] 
     private GameObject itemSlotChild;
-    //kam skript vtváří item sloty
+    //kam skript vytváří item sloty
     [SerializeField] 
     private RectTransform itemSlotParent;
     private GridLayoutGroup gridLayout;
