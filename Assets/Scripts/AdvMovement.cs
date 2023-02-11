@@ -18,8 +18,9 @@ public class AdvMovement : MonoBehaviour
     [Header("References")]
     [SerializeField] private GameObject playerGameObject;
     [SerializeField] private CharacterController characterController;
+    [SerializeField] private AudioSource movementAudioSource;
     [SerializeField] private Transform groundCheck;
-    [SerializeField] private Transform view;
+    [SerializeField] private Transform view;[Header("Settings")]
 
     [Header("Settings")]
     [SerializeField] [Range(0f,1f)] private float cameraOffset = 0.3f;
@@ -35,10 +36,16 @@ public class AdvMovement : MonoBehaviour
     [SerializeField] private float groundDistanse = 0.1f;
     [SerializeField] private float groundOffset = 0.1f;
     [SerializeField] private LayerMask groundMask;
+    [SerializeField] private LayerMask checkHeadMask;
+
+    [Header("Settings")]
+    [SerializeField] private AudioClip walkSound;
+    [SerializeField] private AudioClip runSound;
 
 
+    //
+    private float stamina;
 
-    
 
     // Helper variables
     private Vector3 velocity;
@@ -58,7 +65,47 @@ public class AdvMovement : MonoBehaviour
 
     private void Update() {
         MoveView();
-        MovePlayer();
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistanse, groundMask);
+
+        if (Input.GetKey(KeyCode.LeftControl)) {
+            speedMod = crouchSpeed;
+            SetHeight(crouchHeight);
+            movementAudioSource.clip = walkSound;
+        }
+        else if (Input.GetKey(KeyCode.LeftShift)) {
+            if(TrySetHeight(baseHeight)){
+                speedMod = sprintSpeed;
+                movementAudioSource.clip = runSound;
+            }
+        }
+        else {
+            if(TrySetHeight(baseHeight)){
+                speedMod = baseSpeed;
+                movementAudioSource.clip = walkSound;
+            }
+        }
+
+        Vector3 inputMovement = Input.GetAxis("Vertical") * transform.forward + Input.GetAxis("Horizontal") * transform.right;
+        inputMovement *= speedMod * Time.deltaTime;
+
+        if(inputMovement == Vector3.zero || !isGrounded){
+            movementAudioSource.Stop();
+        }
+        else if (!movementAudioSource.isPlaying){
+            movementAudioSource.Play();
+        }
+        
+        if(isGrounded && velocity.y < 0){
+            velocity.y = staticGravity;
+            movement = inputMovement;
+        }
+
+        if (isGrounded && velocity.y < 0 && Input.GetButtonDown("Jump")) {
+            velocity.y = Mathf.Sqrt(jumpHeight * -3f * gravity);
+        }
+
+        velocity.y += gravity * Time.deltaTime;
+        characterController.Move(velocity * Time.deltaTime + movement);
     }   
 
     private void MoveView() {
@@ -72,46 +119,62 @@ public class AdvMovement : MonoBehaviour
         playerGameObject.transform.eulerAngles += new Vector3(0f,mouseX,0f);
     }
 
-    private void MovePlayer() {
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistanse, groundMask);
+    private bool TrySetHeight(float height) {
+        float radius = characterController.radius;
+        bool isBlocked = Physics.CheckSphere(
+            playerGameObject.transform.TransformPoint(Vector3.up * Mathf.Max(height - radius*2, 0f)),
+            radius, checkHeadMask);
 
-
-
-
-        if (velocity.y < 0 && Input.GetKey(KeyCode.LeftControl)) {
-            SetHeight(crouchHeight);
-            speedMod = crouchSpeed;
+        if(!isBlocked){
+            SetHeight(height);
+            return true;
         }
-        else{
-            SetHeight(baseHeight);
-            speedMod = baseSpeed;
-
-            if (isGrounded && velocity.y < 0 && Input.GetKey(KeyCode.LeftShift)) {
-                speedMod = sprintSpeed;
-            }
-        }
-        
-
-        Vector3 inputMovement = Input.GetAxis("Vertical") * transform.forward + Input.GetAxis("Horizontal") * transform.right;
-        inputMovement *= speedMod * Time.deltaTime;
-        
-        if(isGrounded && velocity.y < 0){
-            velocity.y = staticGravity;
-            movement = inputMovement;
-        }
-
-        if (isGrounded && velocity.y < 0 && Input.GetButtonDown("Jump")) {
-            velocity.y = Mathf.Sqrt(jumpHeight * -3f * gravity);
-        }
-
-        velocity.y += gravity * Time.deltaTime;
-        characterController.Move(velocity * Time.deltaTime + movement);
+        return false;
     }
 
     private void SetHeight(float height){
-        //float radius = characterController.radius;
+        float radius = characterController.radius;
         characterController.height = height;
-        characterController.center = Vector3.up * (.5f * (Mathf.Max((height - 1f),0f) + groundOffset));
-        view.transform.localPosition = Vector3.up * (Mathf.Max(height - 1f, 0f) + cameraOffset);
+        characterController.center = Vector3.up * (.5f * (Mathf.Max((height - radius*2),0f) + groundOffset));
+        view.transform.localPosition = Vector3.up * (Mathf.Max(height - radius*2, 0f) + cameraOffset * radius);
     }
+
+    
+
+
+    // private void MovePlayer() {
+    //     isGrounded = Physics.CheckSphere(groundCheck.position, groundDistanse, groundMask);
+
+
+
+
+    //     if (velocity.y < 0 && Input.GetKey(KeyCode.LeftControl)) {
+    //         SetHeight(crouchHeight);
+    //         speedMod = crouchSpeed;
+    //     }
+    //     else{
+    //         SetHeight(baseHeight);
+    //         speedMod = baseSpeed;
+
+    //         if (isGrounded && velocity.y < 0 && Input.GetKey(KeyCode.LeftShift)) {
+    //             speedMod = sprintSpeed;
+    //         }
+    //     }
+        
+
+    //     Vector3 inputMovement = Input.GetAxis("Vertical") * transform.forward + Input.GetAxis("Horizontal") * transform.right;
+    //     inputMovement *= speedMod * Time.deltaTime;
+        
+    //     if(isGrounded && velocity.y < 0){
+    //         velocity.y = staticGravity;
+    //         movement = inputMovement;
+    //     }
+
+    //     if (isGrounded && velocity.y < 0 && Input.GetButtonDown("Jump")) {
+    //         velocity.y = Mathf.Sqrt(jumpHeight * -3f * gravity);
+    //     }
+
+    //     velocity.y += gravity * Time.deltaTime;
+    //     characterController.Move(velocity * Time.deltaTime + movement);
+    // }
 }
