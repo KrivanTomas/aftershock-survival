@@ -4,20 +4,22 @@ using UnityEngine;
 using UnityEngine.UI;
 public class InventoryFunction : MonoBehaviour
 {
-    //todo: změna velikosti inv během hry
-    //      práce s listem (ItemInfo -> Item)
-    //      nastavení velikosti -> změnit pozici
-    //      lépe zakomentovat
-
-    //velikost (šířka a výška) item slotu 
+    //todo:     práce se souřadnicema
+    //          ošetření index out of range
+    //          optimalizace práce s listem, vykreslení
+    
     public int PocetVyska;
     public int PocetSirka;
+    //velikost (šířka a výška) item slotu v grafickém zobrazení
     [SerializeField] private float itemSlotSize;
-    //padding okna s item sloty
+    //velikost okraje okna inventáře v grafickém zobrazení
     [SerializeField] private float padding;
+    //objekt pod který se vykreslují položky v inventáři
     [SerializeField] private RectTransform inventoryLocation;
+    //objekt pomocí kterého se vykreslují položky v inventáři
     [SerializeField] private GameObject itemPrefab;
-
+    //strukturovaný datový typ co ukládá informace o itemu zbytečné pro samotnou třídu Item
+    //předpokládám že informace kde je item umístěn nebude potřeba komunikovat zvenčí
     private struct ItemInfo
     {
         public ItemInfo(Item item, int pozX, int pozY)
@@ -26,12 +28,16 @@ public class InventoryFunction : MonoBehaviour
             this.pozX = pozX;
             this.pozY = pozY;
         }
+        public Item item;
+        //pozice itemu v inventáři
+        //pokud větší než 1x1 tak levý horní roh itemu
         public int pozX;
         public int pozY;
-        public Item item;
+        
     }
 
-    //pomocí tohoto pole (a itemSlotSize, padding) se podle pozice kurzoru dopočítá na jaký slot hráč klikl
+    //současný stav inventáře jako čtvercové pole
+    //slouží jen pro kontrolu
     private Item[,] inventoryContent;
     //seznam všech itemů v inventáři
     private List<ItemInfo> ItemList;
@@ -42,16 +48,23 @@ public class InventoryFunction : MonoBehaviour
         inventoryContent = new Item[PocetSirka,PocetVyska];
         ItemList = new List<ItemInfo>();
     }
+    // vrátí pole všech itemů v inventáři
     public Item[] Inventar()
     {
-        //return ItemList.ToArray();
-        return null;
+        int pocet = ItemList.Count;
+        Item[] items = new Item[pocet];
+        for(int i = 0;i<pocet;i++)
+        {
+            items[i] = ItemList[i].item;
+        }
+        return items;
 
     }
-    //horní levý roh
+    //pokusí se přidat item do inventáře
+    //vrací bool podle úspěšnosti
     public bool Pridej(Item item, int pozX, int pozY)
     {
-        //kontrola
+        //kontrola platnosti umístění
         for(int i = 0;i<item.SizeX;i++)
         {
             for(int j = 0;j<item.SizeY;j++)
@@ -60,7 +73,7 @@ public class InventoryFunction : MonoBehaviour
                     return false;
             }
         }
-        //nastavení hodnot
+        //uložení, vykreslení
         for(int i = 0;i<item.SizeX;i++)
         {
             for(int j = 0;j<item.SizeY;j++)
@@ -72,39 +85,54 @@ public class InventoryFunction : MonoBehaviour
         Vykresli();
         return true;
     }
+    //odebere item z inventáře
     public void Odeber(Item item)
     {
-        //ItemInfo itemInfo = ItemList.Find();
+        //vyhledání ItemInfo v listu podle parametru
+        ItemInfo itemInfo = new ItemInfo();
+        foreach(ItemInfo polozka in ItemList)
+        {
+            if(polozka.item.Id == item.Id)
+            {
+                itemInfo = polozka;
+                break;
+            }
+        }
+        //vymazání, vykreslení
         for(int i = 0;i<item.SizeX;i++)
         {
             for(int j = 0;j<item.SizeY;j++)
             {
-                //inventoryContent[pozX + i, pozY + j] = null;
+                inventoryContent[itemInfo.pozX + i, itemInfo.pozY + j] = null;
             }
         }
+        ItemList.Remove(itemInfo);
+        Vykresli();
     }
-    //vymaže všechny objekty z inventoryLocation a vykreslí itemy podle inventoryContent
+    //vymaže všechny objekty z inventoryLocation a vykreslí itemy podle ItemList
     private void Vykresli()
     {
-        //vymazání
+        //vymazání předchozích objektů
         for(int i = 0;i<inventoryLocation.childCount;i++)
         {
             Destroy(inventoryLocation.GetChild(i).gameObject);
         }
-        //vykreslení
+        //vykrelí současný stav
         foreach(ItemInfo itemInfo in ItemList)
         {
             GameObject slot = Instantiate(itemPrefab,inventoryLocation);
             slot.GetComponent<RawImage>().texture = itemInfo.item.Icon;
             //nastavení pozice objektu
-            //itemSlotSize / 2 - výchozí pozice levý horní roh - (kvůli nastavení anchor)
             //padding - mezery okna inventáře
             //itemSlotSize * itemInfo.pozX - rozdělení na čtvercové pole
             (slot.transform as RectTransform).anchoredPosition = new Vector2(
-                itemSlotSize / 2 + padding + itemSlotSize * itemInfo.pozX,
-                -itemSlotSize / 2 - padding - itemSlotSize * itemInfo.pozY);
+                padding + itemSlotSize * itemInfo.pozX,
+                padding - itemSlotSize * itemInfo.pozY);
             //nastavení velikosti objektu
-            //(slot.transform as RectTransform).sizeDelta;
+            //pivot[0,1]
+            (slot.transform as RectTransform).sizeDelta = new Vector2(
+                itemSlotSize * itemInfo.item.SizeX,
+                itemSlotSize * itemInfo.item.SizeY);
         }
             
     }

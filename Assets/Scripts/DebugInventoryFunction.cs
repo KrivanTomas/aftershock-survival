@@ -7,9 +7,10 @@ public class DebugInventoryFunction : MonoBehaviour
     // Start is called before the first frame update
     public InventoryFunction invScript;
     public Item[] addInventory;
-    public Item adding;
-    public int index = 0;
-    public bool delej = false;
+    public int[] poziceX;
+    public int[] poziceY;
+    public bool pridej = false;
+    public bool vymaz = false;
     void Start()
     {
          
@@ -18,11 +19,21 @@ public class DebugInventoryFunction : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(delej)
+        if(pridej)
         {
-            invScript.Pridej(adding,1,0);
-            index++;
-            delej = false;
+            for(int i = 0;i<addInventory.Length;i++)
+            {
+                invScript.Pridej(addInventory[i],poziceX[i],poziceY[i]);
+            }
+            pridej = false;
+        }
+        if(vymaz)
+        {
+            for(int i = 0;i<addInventory.Length;i++)
+            {
+                invScript.Odeber(addInventory[i]);
+            }
+            vymaz = false;
         }
     }
 }

@@ -431,11 +431,12 @@ MonoBehaviour:
   invScript: {fileID: 732333764}
   addInventory:
   - {fileID: 11400000, guid: a15da5a4daf6b084d8a5edae19fe6b7a, type: 2}
-  - {fileID: 11400000, guid: bc84c65078143e84d89f8fad9da6b5b1, type: 2}
   - {fileID: 11400000, guid: 40b3b7234fe2e4e448f791e78c001e8f, type: 2}
-  adding: {fileID: 11400000, guid: 40b3b7234fe2e4e448f791e78c001e8f, type: 2}
-  index: 0
-  delej: 0
+  - {fileID: 11400000, guid: bc84c65078143e84d89f8fad9da6b5b1, type: 2}
+  poziceX: 000000000000000003000000
+  poziceY: 000000000200000000000000
+  pridej: 0
+  vymaz: 0
 --- !u!114 &732333768
 MonoBehaviour:
   m_ObjectHideFlags: 0
