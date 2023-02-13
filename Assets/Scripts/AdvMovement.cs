@@ -43,12 +43,22 @@ public class AdvMovement : MonoBehaviour
     [SerializeField] private AudioClip runSound;
 
 
+
+    private enum MoveState{
+        Walking,
+        Runing,
+        Crouching,
+        NotSet
+    }
+
+
+
     //
     private float stamina;
-
+    private MoveState moveState = MoveState.NotSet;
 
     // Helper variables
-    private Vector3 velocity;
+    private Vector3 velocity = Vector3.zero;
     private Vector3 movement;
     private float verticalRotation = 0f;
     private float speedMod;
@@ -67,28 +77,31 @@ public class AdvMovement : MonoBehaviour
         MoveView();
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistanse, groundMask);
 
-        if (Input.GetKey(KeyCode.LeftControl)) {
-            speedMod = crouchSpeed;
+        if (Input.GetKey(KeyCode.LeftControl) && moveState != MoveState.Crouching) {
             SetHeight(crouchHeight);
+            speedMod = crouchSpeed;
             movementAudioSource.clip = walkSound;
+            moveState = MoveState.Crouching;
         }
-        else if (Input.GetKey(KeyCode.LeftShift)) {
+        else if (Input.GetKey(KeyCode.LeftShift) && moveState != MoveState.Runing) {
             if(TrySetHeight(baseHeight)){
                 speedMod = sprintSpeed;
                 movementAudioSource.clip = runSound;
+                moveState = MoveState.Runing;
             }
         }
-        else {
+        else if (!Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.LeftControl) && moveState != MoveState.Walking) {
             if(TrySetHeight(baseHeight)){
                 speedMod = baseSpeed;
                 movementAudioSource.clip = walkSound;
+                moveState = MoveState.Walking;
             }
         }
 
-        Vector3 inputMovement = Input.GetAxis("Vertical") * transform.forward + Input.GetAxis("Horizontal") * transform.right;
-        inputMovement *= speedMod * Time.deltaTime;
+        Vector3 inputMovement = Vector3.ClampMagnitude(Input.GetAxis("Vertical") * transform.forward + Input.GetAxis("Horizontal") * transform.right, 1f);
+        inputMovement *= speedMod;
 
-        if(inputMovement == Vector3.zero || !isGrounded){
+        if((inputMovement == Vector3.zero || !isGrounded) && movementAudioSource.isPlaying){
             movementAudioSource.Stop();
         }
         else if (!movementAudioSource.isPlaying){
@@ -98,14 +111,13 @@ public class AdvMovement : MonoBehaviour
         if(isGrounded && velocity.y < 0){
             velocity.y = staticGravity;
             movement = inputMovement;
-        }
-
-        if (isGrounded && velocity.y < 0 && Input.GetButtonDown("Jump")) {
-            velocity.y = Mathf.Sqrt(jumpHeight * -3f * gravity);
+            if(Input.GetButtonDown("Jump")){
+                velocity.y = Mathf.Sqrt(jumpHeight * -3f * gravity);
+            }
         }
 
         velocity.y += gravity * Time.deltaTime;
-        characterController.Move(velocity * Time.deltaTime + movement);
+        characterController.Move(velocity * Time.deltaTime + movement * Time.deltaTime);
     }   
 
     private void MoveView() {
@@ -137,44 +149,5 @@ public class AdvMovement : MonoBehaviour
         characterController.height = height;
         characterController.center = Vector3.up * (.5f * (Mathf.Max((height - radius*2),0f) + groundOffset));
         view.transform.localPosition = Vector3.up * (Mathf.Max(height - radius*2, 0f) + cameraOffset * radius);
-    }
-
-    
-
-
-    // private void MovePlayer() {
-    //     isGrounded = Physics.CheckSphere(groundCheck.position, groundDistanse, groundMask);
-
-
-
-
-    //     if (velocity.y < 0 && Input.GetKey(KeyCode.LeftControl)) {
-    //         SetHeight(crouchHeight);
-    //         speedMod = crouchSpeed;
-    //     }
-    //     else{
-    //         SetHeight(baseHeight);
-    //         speedMod = baseSpeed;
-
-    //         if (isGrounded && velocity.y < 0 && Input.GetKey(KeyCode.LeftShift)) {
-    //             speedMod = sprintSpeed;
-    //         }
-    //     }
-        
-
-    //     Vector3 inputMovement = Input.GetAxis("Vertical") * transform.forward + Input.GetAxis("Horizontal") * transform.right;
-    //     inputMovement *= speedMod * Time.deltaTime;
-        
-    //     if(isGrounded && velocity.y < 0){
-    //         velocity.y = staticGravity;
-    //         movement = inputMovement;
-    //     }
-
-    //     if (isGrounded && velocity.y < 0 && Input.GetButtonDown("Jump")) {
-    //         velocity.y = Mathf.Sqrt(jumpHeight * -3f * gravity);
-    //     }
-
-    //     velocity.y += gravity * Time.deltaTime;
-    //     characterController.Move(velocity * Time.deltaTime + movement);
-    // }
+    }   
 }
