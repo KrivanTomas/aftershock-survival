@@ -1,15 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.Events;
 using UnityEngine.UI;
 public class InventoryFunction : MonoBehaviour
 {
     //todo:     práce se souřadnicema
-    //          ošetření index out of range
+    //          ošetření index out of range v metodě Pridej / Odeber (příliš velký item)
     //          optimalizace práce s listem, vykreslení
     
     public int PocetVyska;
     public int PocetSirka;
+
     //velikost (šířka a výška) item slotu v grafickém zobrazení
     [SerializeField] private float itemSlotSize;
     //velikost okraje okna inventáře v grafickém zobrazení
@@ -18,9 +21,12 @@ public class InventoryFunction : MonoBehaviour
     [SerializeField] private RectTransform inventoryLocation;
     //objekt pomocí kterého se vykreslují položky v inventáři
     [SerializeField] private GameObject itemPrefab;
+    //to co je na kurzoru při přesouvání itemů
+    [SerializeField] private CursorFollow cursorFollow;
     //strukturovaný datový typ co ukládá informace o itemu zbytečné pro samotnou třídu Item
     //předpokládám že informace kde je item umístěn nebude potřeba komunikovat zvenčí
-    private struct ItemInfo
+    //*****potom nastavit na private*****************************************************************************************************************************************************************************
+    public struct ItemInfo
     {
         public ItemInfo(Item item, int pozX, int pozY)
         {
@@ -46,13 +52,55 @@ public class InventoryFunction : MonoBehaviour
     void Start()
     {
         inventoryContent = new Item[PocetSirka,PocetVyska];
-        ItemList = new List<ItemInfo>();
+        ItemList = new List<ItemInfo>();        
     }
     void Update()
     {
-        //Debug.Log(Input.mousePosition - inventoryLocation.position);
-        Vector2 slotsSize = new Vector2(400,400);
-        Debug.Log(slotsSize);
+        int x, y;
+        ItemInfo item;
+        if(Input.GetMouseButtonDown(0))
+        {
+            if(ZiskejKliknuty(out x, out y))
+            {
+                item = new ItemInfo(inventoryContent[x,y],x,y);
+                Odeber(item.item);
+                cursorFollow.NastavItem(item);
+            }
+        }
+        if(Input.GetMouseButtonUp(0))
+        {
+            if(ZiskejKliknuty(out x, out y) && !InventoryFunction.ItemInfo.Equals(cursorFollow.Obsahuje, new InventoryFunction.ItemInfo()))
+            {
+                if(Pridej(cursorFollow.Obsahuje.item,x,y))
+                {
+                    cursorFollow.Vypni();
+                }
+                else
+                {
+                    VratKurzor();
+                }
+            }
+            else
+            {
+                VratKurzor();
+            }
+        }
+        
+    }
+    //jako vrátit do původního stavu
+    public void VratKurzor()
+    {
+        if(!Pridej(cursorFollow.Obsahuje.item,cursorFollow.Obsahuje.pozX,cursorFollow.Obsahuje.pozY))
+        {
+            for(int i = 0;i<inventoryContent.GetLength(0);i++)
+            {
+                for(int j = 0;j<inventoryContent.GetLength(1);j++)
+                {
+                    Pridej(cursorFollow.Obsahuje.item,i,j);
+                }
+            }
+        }
+        cursorFollow.Vypni();
     }
     // vrátí pole všech itemů v inventáři
     public Item[] Inventar()
@@ -66,25 +114,14 @@ public class InventoryFunction : MonoBehaviour
         return items;
 
     }
-    public bool Klikni(Vector3 kurzor,out GameObject item,out Vector3 offset)
-    {
-        item = null;
-        offset = new Vector2();
-        //mimo
-        if(Mathf.Abs(kurzor.x) > (float)PocetSirka / 2 * itemSlotSize ||
-        Mathf.Abs(kurzor.y) > (float)PocetVyska)
-        {
-            return false;
-        }
-        //prazdny
-        
 
-        return true;
-    }
+    
     //pokusí se přidat item do inventáře
     //vrací bool podle úspěšnosti
     public bool Pridej(Item item, int pozX, int pozY)
     {
+        if(pozX < 0 || pozY < 0 || pozX + item.SizeX >= inventoryContent.GetLongLength(0) || pozY + item.SizeY >= inventoryContent.GetLength(1))
+            return false;
         //kontrola platnosti umístění
         for(int i = 0;i<item.SizeX;i++)
         {
@@ -130,6 +167,26 @@ public class InventoryFunction : MonoBehaviour
         ItemList.Remove(itemInfo);
         Vykresli();
     }
+    private bool ZiskejKliknuty(out int x, out int y)
+    {
+        x = 0; y = 0;
+        Vector3 kurzor = Input.mousePosition - inventoryLocation.transform.position;
+        if((float)PocetSirka * itemSlotSize / 2 < Mathf.Abs(kurzor.x) 
+        || (float)PocetVyska * itemSlotSize / 2 < Mathf.Abs(kurzor.y))
+        {
+            return false;
+        }
+        //výchozí pozice levý horní roh
+        kurzor += new Vector3((float)PocetSirka * itemSlotSize / 2, -(float)PocetVyska * itemSlotSize / 2, 0);
+        //převod na souřadnice v poli
+        x = Mathf.FloorToInt(kurzor.x / itemSlotSize); y = Mathf.FloorToInt(-kurzor.y / itemSlotSize);
+        if(inventoryContent[x,y] == null)
+        {
+            return false;
+        }
+        return true;
+    }
+
     //vymaže všechny objekty z inventoryLocation a vykreslí itemy podle ItemList
     private void Vykresli()
     {

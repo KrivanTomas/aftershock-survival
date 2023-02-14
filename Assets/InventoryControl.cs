@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class InventoryControl : MonoBehaviour
 {
+    [SerializeField] private InventoryFunction inventoryFunction;
     public KeyCode CloseOpenKey;
     public GameObject InventoryParent;
     public float ItemSlotSize;
     public bool InventoryOpen;
+    public bool Test = true;
     void Start()
     {
         
@@ -21,13 +23,9 @@ public class InventoryControl : MonoBehaviour
             InventoryOpen = !InventoryOpen;
             InventoryParent.transform.GetChild(0).gameObject.SetActive(InventoryOpen);
             InventoryParent.transform.GetChild(1).gameObject.SetActive(InventoryOpen);
-            
+            if(!InventoryOpen)
+            inventoryFunction.VratKurzor();
         }
         
-        if(true)
-        {
-
-
-        }
     }
 }
