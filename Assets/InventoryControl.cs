@@ -21,6 +21,13 @@ public class InventoryControl : MonoBehaviour
             InventoryOpen = !InventoryOpen;
             InventoryParent.transform.GetChild(0).gameObject.SetActive(InventoryOpen);
             InventoryParent.transform.GetChild(1).gameObject.SetActive(InventoryOpen);
+            
+        }
+        
+        if(true)
+        {
+
+
         }
     }
 }

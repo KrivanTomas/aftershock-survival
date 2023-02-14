@@ -48,6 +48,12 @@ public class InventoryFunction : MonoBehaviour
         inventoryContent = new Item[PocetSirka,PocetVyska];
         ItemList = new List<ItemInfo>();
     }
+    void Update()
+    {
+        //Debug.Log(Input.mousePosition - inventoryLocation.position);
+        Vector2 slotsSize = new Vector2(400,400);
+        Debug.Log(slotsSize);
+    }
     // vrátí pole všech itemů v inventáři
     public Item[] Inventar()
     {
@@ -59,6 +65,21 @@ public class InventoryFunction : MonoBehaviour
         }
         return items;
 
+    }
+    public bool Klikni(Vector3 kurzor,out GameObject item,out Vector3 offset)
+    {
+        item = null;
+        offset = new Vector2();
+        //mimo
+        if(Mathf.Abs(kurzor.x) > (float)PocetSirka / 2 * itemSlotSize ||
+        Mathf.Abs(kurzor.y) > (float)PocetVyska)
+        {
+            return false;
+        }
+        //prazdny
+        
+
+        return true;
     }
     //pokusí se přidat item do inventáře
     //vrací bool podle úspěšnosti
