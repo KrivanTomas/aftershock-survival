@@ -120,7 +120,7 @@ public class InventoryFunction : MonoBehaviour
     //vrací bool podle úspěšnosti
     public bool Pridej(Item item, int pozX, int pozY)
     {
-        if(pozX < 0 || pozY < 0 || pozX + item.SizeX >= inventoryContent.GetLongLength(0) || pozY + item.SizeY >= inventoryContent.GetLength(1))
+        if(pozX < 0 || pozY < 0 || pozX + item.SizeX >= inventoryContent.GetLength(0) || pozY + item.SizeY >= inventoryContent.GetLength(1))
             return false;
         //kontrola platnosti umístění
         for(int i = 0;i<item.SizeX;i++)

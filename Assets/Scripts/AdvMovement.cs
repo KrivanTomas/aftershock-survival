@@ -63,6 +63,7 @@ public class AdvMovement : MonoBehaviour
     private float verticalRotation = 0f;
     private float speedMod;
     private bool isGrounded = false;
+    private bool shut = false;
     
     private void Temp() {
         Cursor.lockState = CursorLockMode.Locked;
@@ -74,7 +75,16 @@ public class AdvMovement : MonoBehaviour
     }
 
     private void Update() {
+
+        if(shut) {
+            if (movementAudioSource.isPlaying){
+                movementAudioSource.Stop();
+            }
+            return;
+        }
+
         MoveView();
+
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistanse, groundMask);
 
         if (Input.GetKey(KeyCode.LeftControl) && moveState != MoveState.Crouching) {
@@ -98,6 +108,8 @@ public class AdvMovement : MonoBehaviour
             }
         }
 
+
+
         Vector3 inputMovement = Vector3.ClampMagnitude(Input.GetAxis("Vertical") * transform.forward + Input.GetAxis("Horizontal") * transform.right, 1f);
         inputMovement *= speedMod;
 
@@ -108,6 +120,7 @@ public class AdvMovement : MonoBehaviour
             movementAudioSource.Play();
         }
         
+
         if(isGrounded && velocity.y < 0){
             velocity.y = staticGravity;
             movement = inputMovement;
@@ -150,4 +163,14 @@ public class AdvMovement : MonoBehaviour
         characterController.center = Vector3.up * (.5f * (Mathf.Max((height - radius*2),0f) + groundOffset));
         view.transform.localPosition = Vector3.up * (Mathf.Max(height - radius*2, 0f) + cameraOffset * radius);
     }   
+
+    public void Shut(bool doShut){
+        shut = doShut;
+        if(shut){
+            Cursor.lockState = CursorLockMode.Confined;
+        }
+        else{
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+    }
 }

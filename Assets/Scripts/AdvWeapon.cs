@@ -20,10 +20,10 @@ public class AdvWeapon : MonoBehaviour
 
 
     private int bulletsInClip;
-    private bool pistolEquiped = true;
+    private bool pistolEquiped = false;
     private bool reloading = false;
     private bool helpu = false;
-
+    private bool shut = false;
 
 
     // Start is called before the first frame update
@@ -35,7 +35,7 @@ public class AdvWeapon : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(!pistolEquiped) return;
+        if(!pistolEquiped || shut) return;
         
         lightFlash.intensity -= 10 * Time.deltaTime;
 
@@ -87,5 +87,9 @@ public class AdvWeapon : MonoBehaviour
         animator.SetTrigger("deDraw");
         pistolGameObject.SetActive(false);
         pistolEquiped = false;
+    }
+
+    public void Shut(bool doShut){
+        shut = doShut;
     }
 }

@@ -9,10 +9,10 @@ public class CursorFollow : MonoBehaviour
     [SerializeField] private float itemSize;
     [SerializeField] private RectTransform cursorItemTran;
     [SerializeField] private RawImage cursorItemImage;
-    public InventoryFunction.ItemInfo Obsahuje {get; private set;}
+    public InventoryFunction.ItemInfo Obsahuje { get; private set;}
     void Start()
     {
-        Obsahuje = new InventoryFunction.ItemInfo(new Item(),0,0);
+        Obsahuje = new InventoryFunction.ItemInfo(Item.CreateInstance<Item>(),0,0);
     }
 
     // Update is called once per frame

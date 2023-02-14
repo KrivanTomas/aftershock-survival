@@ -20,6 +20,7 @@ public class PlayerMovementScript : MonoBehaviour
     private float speed;
     public Vector3 velocity = new Vector3();
     private bool isGrounded;
+    private bool shut = false;
 
     // Start is called before the first frame update
     void Start()
@@ -31,6 +32,7 @@ public class PlayerMovementScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(shut) return;
 
         if(Input.GetKey(KeyCode.LeftShift))
         {
@@ -66,5 +68,9 @@ public class PlayerMovementScript : MonoBehaviour
 
         velocity.y += gravity * Time.deltaTime;
         chControl.Move(move * Time.deltaTime * speed + velocity * Time.deltaTime);
+    }
+
+    public void Shut(bool doShut){
+        shut = doShut;
     }
 }
