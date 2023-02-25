@@ -10,5 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: af04bc0a1a4c66b49adafae7cad3afa2, type: 3}
-  m_Name: KuroItem
+  m_Name: WideTobenItem
   m_EditorClassIdentifier: 
+  itemID: 0
+  size: {x: 2, y: 1}
+  sprite: {fileID: 21300000, guid: a7e3531f72d1e574eb6b57928fc2a92f, type: 3}
+  itemName: Toben
+  itemDescription: He a wide fluffy boii
