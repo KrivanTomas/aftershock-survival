@@ -305,7 +305,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.27058825}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.90588236}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -344,8 +344,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridSize: {x: 10, y: 10}
   itemPrefab: {fileID: 7050683021729437302, guid: 62bdcab3879e16147ac8d850fb3e757e, type: 3}
-  testItemData1: {fileID: 11400000, guid: ce2abb8158e58844383b4d7d7d0701b6, type: 2}
-  testItemData2: {fileID: 11400000, guid: feef9ce07f6ecd244b6dc2252ba27d42, type: 2}
+  testItemData:
+  - {fileID: 11400000, guid: ce2abb8158e58844383b4d7d7d0701b6, type: 2}
+  - {fileID: 11400000, guid: feef9ce07f6ecd244b6dc2252ba27d42, type: 2}
+  - {fileID: 11400000, guid: 6bff4738cb9b7de4b87fac2bd4fe1136, type: 2}
+  - {fileID: 11400000, guid: 870f1020963134447817093d0841a41b, type: 2}
+  defaultColor: {r: 1, g: 1, b: 1, a: 0.39215687}
+  collisionColor: {r: 0.7372549, g: 0, b: 0, a: 0.39215687}
 --- !u!1 &1388538602
 GameObject:
   m_ObjectHideFlags: 0
