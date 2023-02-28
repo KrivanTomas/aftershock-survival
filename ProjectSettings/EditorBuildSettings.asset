@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/advanced_movement_and_gunplay.unity
+    guid: 609fb5cc909803b4d8416053ff624e2f
   m_configObjects: {}
