@@ -19,6 +19,7 @@ public class InvKuroVerScript : MonoBehaviour, IPointerDownHandler, IPointerUpHa
 
     private float tileSize;
 
+    private KuroItemHandle contextItem;
     private GameObject dragGameObject;
     private KuroItemHandle dragItemHandle;
     private RectTransform inventoryRectTransform;
@@ -37,16 +38,16 @@ public class InvKuroVerScript : MonoBehaviour, IPointerDownHandler, IPointerUpHa
         tileSize = inventoryBounds.size.x / gridSize.x;
         whtOffset = new Vector3(tileSize * .5f, inventoryBounds.height * .5f + tileSize * .5f, 0f);
 
-        for(int i = 0; i < 40; i++){
-            KuroItemHandle itemHandle;
-            if(TryAddItem(testItemData[Random.Range(0, testItemData.GetLength(0) - 1)], out itemHandle)){
-                items.Add(itemHandle);
-            }
-            else{
-                Debug.Log("<color=red>Item dosent fit " + i + "</color>");
-            }
+        // for(int i = 0; i < 10; i++){
+        //     KuroItemHandle itemHandle;
+        //     if(TryAddItem(testItemData[Random.Range(0, testItemData.GetLength(0) - 1)], out itemHandle)){
+        //         items.Add(itemHandle);
+        //     }
+        //     else{
+        //         Debug.Log("<color=red>Item dosent fit " + i + "</color>");
+        //     }
             
-        }
+        // }
         
     }
 
@@ -81,12 +82,14 @@ public class InvKuroVerScript : MonoBehaviour, IPointerDownHandler, IPointerUpHa
         }
     }
 
-
-
     public void OnPointerDown(PointerEventData poi){
         // Check for valid GameObject (item) to drag
         collided = false;
         if(poi.button == PointerEventData.InputButton.Left) {
+            if(contextItem){
+                contextItem.HideContextMenu();
+                contextItem = null;
+            }
             GameObject hitGameObject = poi.pointerCurrentRaycast.gameObject;
             if(hitGameObject.tag == "InventoryItem"){
                 dragGameObject = hitGameObject;
@@ -94,6 +97,18 @@ public class InvKuroVerScript : MonoBehaviour, IPointerDownHandler, IPointerUpHa
                 lastPosition = dragGameObject.transform.position;
                 lastRotation = dragItemHandle.rotated;
                 dragGameObject.transform.SetAsLastSibling();
+            }
+        }
+        else if(poi.button == PointerEventData.InputButton.Right) {
+            if(contextItem){
+                contextItem.HideContextMenu();
+                contextItem = null;
+            }
+            GameObject hitGameObject = poi.pointerCurrentRaycast.gameObject;
+            if(hitGameObject.tag == "InventoryItem"){
+                contextItem = hitGameObject.GetComponent<KuroItemHandle>();
+                contextItem.transform.SetAsLastSibling();
+                contextItem.ShowContextMenu();
             }
         }
     }
@@ -163,7 +178,12 @@ public class InvKuroVerScript : MonoBehaviour, IPointerDownHandler, IPointerUpHa
         return true;
     }
 
-    private bool TryAddItem(KuroItem itemData, out KuroItemHandle itemHandle){
+    private void RemoveItem(KuroItemHandle itemHandle){
+        items.Remove(itemHandle);
+        Destroy(itemHandle.gameObject);
+    }
+
+    public bool TryAddItem(KuroItem itemData, out KuroItemHandle itemHandle){
         // speed up conditions:
         //  - in inv bounds
         //  - not in the same position

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class KuroItemHandle : MonoBehaviour
 {
@@ -18,6 +19,11 @@ public class KuroItemHandle : MonoBehaviour
     [SerializeField] private Image image;
     public bool rotated = false;
 
+    [SerializeField] private GameObject contextMenu;
+    [SerializeField] private TextMeshProUGUI contextMenuTitle;
+    [SerializeField] private TextMeshProUGUI contextMenuDesc;
+
+
     public void LoadData(KuroItem data){
         itemID = data.itemID;
         itemName = data.itemName;
@@ -26,6 +32,9 @@ public class KuroItemHandle : MonoBehaviour
         rotatedItemSize = new Vector2(data.size.y, data.size.x);
         finalSize = itemSize;
         SetSprite(data.sprite);
+
+        contextMenuTitle.text = data.itemName;
+        contextMenuDesc.text = data.itemDescription;
     }
 
     public void SetSprite(Sprite sprite){
@@ -35,12 +44,19 @@ public class KuroItemHandle : MonoBehaviour
     public void Rotate(){
         rotated = !rotated;
         rectTransform.rotation = !rotated ? Quaternion.Euler(0f,0f,0f) : Quaternion.Euler(0f,0f,90f);
-        rectTransform.ForceUpdateRectTransforms();
         finalSize = !rotated ? itemSize : rotatedItemSize;
     }
     public void Rotate(bool forceRotationState){
         rotated = forceRotationState;
         rectTransform.rotation = !rotated ? Quaternion.Euler(0f,0f,0f) : Quaternion.Euler(0f,0f,90f);
         finalSize = !rotated ? itemSize : rotatedItemSize;
+    }
+
+    public void ShowContextMenu(){
+        contextMenu.transform.rotation = Quaternion.Euler(0f,0f,0f);
+        contextMenu.SetActive(true);
+    }
+    public void HideContextMenu(){
+        contextMenu.SetActive(false);
     }
 }
